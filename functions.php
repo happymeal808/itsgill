@@ -150,6 +150,30 @@ function itsgill_scripts() {
 add_action( 'wp_enqueue_scripts', 'itsgill_scripts' );
 
 /**
+ * add prev/next post arrows
+ */
+function add_prev_next_posts_to_rest_api($data, $post, $context) {
+    $previous_post = get_previous_post();
+    $next_post = get_next_post();
+    
+    $data->data['previous_post'] = $previous_post ? [
+        'id' => $previous_post->ID,
+        'slug' => $previous_post->post_name,
+        'title' => $previous_post->post_title,
+    ] : null;
+
+    $data->data['next_post'] = $next_post ? [
+        'id' => $next_post->ID,
+        'slug' => $next_post->post_name,
+        'title' => $next_post->post_title,
+    ] : null;
+
+    return $data;
+}
+
+add_filter('rest_prepare_post', 'add_prev_next_posts_to_rest_api', 10, 3);
+
+/**
  * Implement the Custom Header feature.
  */
 require get_template_directory() . '/inc/custom-header.php';
